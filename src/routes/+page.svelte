@@ -1,18 +1,10 @@
 
 <script>
-    import { socket } from "../assets/socket-client.ts"
     import { goto } from '$app/navigation';
     import { onMount } from "svelte"
- 
-    onMount(() => {
-        socket.on("foundRoom", (id) => {
-            localStorage.setItem("roomId", id)
-            goto("/room")
-        })
-    })
 
-    function handlePlay() {
-        socket.emit("play");
+    function play() {
+        goto("/abc")
     }
 
 </script>
@@ -26,7 +18,7 @@
         <h1 class="title">Robot or Not</h1>
     </div>
     <div class="buttons">
-        <button class="play" on:click={handlePlay}>Start Game</button>
+        <button class="play" on:click={play}>Start Game</button>
     </div>
 </div>
 
