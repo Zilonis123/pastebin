@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Server } from 'socket.io';
 import UIDGenerator from 'uid-generator';
 const uidgen = new UIDGenerator(); // Default is a 128-bit UID encoded in base58
@@ -18,12 +19,7 @@ export const webSocketServer = {
 export function injectSocketIO(server) {
     const io = new Server(server);
 
-    const bins = {
-        "abc": {
-            "title": "abc",
-            "bin": "I am <strong>strong</strong>!" 
-        }
-    }
+    const bins = {}
 
 
     io.on('connection', (socket) => {
@@ -32,9 +28,25 @@ export function injectSocketIO(server) {
             // @ts-ignore
             const bin = bins[binId];
 
+            if (!bin) {
+                socket.emit("failedBin")
+                return
+            }
+
+            bins[binId].views++;
+
             socket.emit("succesfulBin", bin)
         });
 
+        socket.on("createBin", async (bin) => {
+
+            const id = await uidgen.generate(); // -> 'B1q2hUEKmeVp9zWepx9cnp'
+            
+            bin.views = 0;
+            bins[id] = bin; // add the bin to all bins
+
+            socket.emit("createdBin", id)
+        })
     });
 
     console.log('SocketIO injected');

@@ -1,66 +1,57 @@
 
-<script>
+<script lang="ts">
     import { goto } from '$app/navigation';
     import { onMount } from "svelte"
+    import { socket } from '../assets/socket-client';
 
-    function play() {
-        goto("/abc")
+    let bin: string;
+    let title: string;
+    let description: string;
+
+    function createBin() {
+        socket.emit("createBin", {title, description, bin});
+
+        socket.on("createdBin", (id) => {
+            goto("/" + id)
+        });
     }
-
 </script>
 
-<svelte:head>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-</svelte:head>
+<main>
+    <label for="title">Title</label>
+    <input name="title" bind:value={title}>
+    <label for="description">Description</label>
+    <input name="description" bind:value={description}>
+    <label for="bin">Text</label>
+    <input name="bin" class="bin" bind:value={bin}>
 
-<div class="frame">
-    <div class="text-frame">
-        <h1 class="title">Robot or Not</h1>
-    </div>
-    <div class="buttons">
-        <button class="play" on:click={play}>Start Game</button>
-    </div>
-</div>
-
+    <button on:click={createBin}>Create bin</button>
+</main>
 
 <style>
-    .frame {
-        display: grid;
-        grid-template-columns: 75% auto;
-        width: 100vm;
+    main {
+        background-color: var(--surface);
+        width: 100vw;
         height: 100vh;
-    }
-
-    .text-frame {
         display: grid;
-        align-items: center;
-        justify-content: left;
+        padding: 50px 100px 50px 100px;
+        gap: 10px
     }
 
-    .title {
-        margin-left: 10vw;
-        font-family: 'Roboto', sans-serif;
+    input {
+        width: 100px;
+        height: 50px;
+        color: #292929;
     }
 
-    .buttons {
-        display: grid;
-        align-items: center;
+    .bin {
+        width: 300px;
+        height: 150px;
     }
 
-    .play {
-        margin-right: 10vw;
-        font-family: 'Poppins', sans-serif;        
-        font-size: 20px;
-        border: none;
-        height: 60px;
-        width: 200px;
-        background-color: blueviolet;
-        transition: ease-in-out 1s;
-    }
-
-    .play:hover {
-        cursor: pointer;
-        opacity: 90%;
-        font-size: 19px
+    button  {
+        background-color: var(--secondary-surface);
+        width: 100px;
+        height: 70px;
     }
 </style>
